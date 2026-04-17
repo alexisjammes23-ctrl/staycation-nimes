@@ -1,1 +1,718 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Staycation — Conciergerie Airbnb · Nîmes & Gard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 
+<style>
+  :root {
+    --sand: #F5F0E8;
+    --cream: #FAF7F2;
+    --stone: #C8BBA8;
+    --terra: #8B6F5E;
+    --deep: #2C2420;
+    --accent: #B5845A;
+    --light-accent: #D4A574;
+    --white: #FEFEFE;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; font-size: 16px; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--deep);
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* CURSOR */
+  .cursor {
+    width: 10px; height: 10px;
+    background: var(--accent);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none; z-index: 9999;
+    mix-blend-mode: multiply;
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1px solid var(--accent);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none; z-index: 9998;
+    transition: transform 0.35s ease, width 0.3s, height 0.3s;
+    opacity: 0.6;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 1.8rem 4rem;
+    display: flex; justify-content: space-between; align-items: center;
+    transition: background 0.4s, padding 0.4s;
+  }
+  nav.scrolled {
+    background: rgba(250,247,242,0.93);
+    backdrop-filter: blur(12px);
+    padding: 1.1rem 4rem;
+    border-bottom: 1px solid rgba(200,187,168,0.3);
+  }
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem; font-weight: 300;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--deep); text-decoration: none;
+  }
+  .nav-logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+  .nav-links a {
+    font-size: 0.8rem; letter-spacing: 0.12em;
+    text-transform: uppercase; text-decoration: none;
+    color: var(--deep); opacity: 0.7;
+    transition: opacity 0.3s; font-weight: 400;
+  }
+  .nav-links a:hover { opacity: 1; }
+
+  /* HERO */
+  #accueil {
+    min-height: 100vh;
+    display: grid; place-items: center;
+    padding: 8rem 4rem 4rem;
+    position: relative; overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 70% 40%, rgba(181,132,90,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 60% at 20% 80%, rgba(200,187,168,0.15) 0%, transparent 50%);
+  }
+  .hero-lines {
+    position: absolute; inset: 0; overflow: hidden; opacity: 0.06;
+  }
+  .hero-lines svg { width: 100%; height: 100%; }
+  .hero-content { position: relative; max-width: 900px; text-align: center; }
+
+  .hero-tag {
+    display: inline-block;
+    font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--accent); border: 1px solid var(--stone);
+    padding: 0.45rem 1.2rem; margin-bottom: 2.5rem; border-radius: 2rem;
+    opacity: 0; animation: fadeUp 0.8s 0.2s forwards;
+  }
+  .hero-h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.8rem, 6vw, 5.5rem);
+    font-weight: 300; line-height: 1.1;
+    color: var(--deep); margin-bottom: 1.5rem;
+    opacity: 0; animation: fadeUp 0.9s 0.4s forwards;
+  }
+  .hero-h1 em { font-style: italic; color: var(--accent); }
+  .hero-sub {
+    font-size: 1.05rem; font-weight: 300; color: var(--terra);
+    max-width: 550px; margin: 0 auto 3rem; line-height: 1.7;
+    opacity: 0; animation: fadeUp 0.9s 0.6s forwards;
+  }
+  .hero-cta-group {
+    display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+    opacity: 0; animation: fadeUp 0.9s 0.8s forwards;
+  }
+  .btn-primary {
+    background: var(--deep); color: var(--cream);
+    padding: 1rem 2.5rem; font-size: 0.82rem;
+    letter-spacing: 0.12em; text-transform: uppercase; text-decoration: none;
+    border-radius: 0.3rem; transition: background 0.3s, transform 0.2s;
+    border: 2px solid var(--deep); display: inline-block;
+  }
+  .btn-primary:hover { background: var(--accent); border-color: var(--accent); transform: translateY(-2px); }
+  .btn-secondary {
+    background: transparent; color: var(--deep);
+    padding: 1rem 2.5rem; font-size: 0.82rem;
+    letter-spacing: 0.12em; text-transform: uppercase; text-decoration: none;
+    border-radius: 0.3rem; border: 2px solid var(--stone);
+    transition: border-color 0.3s, color 0.3s, transform 0.2s; display: inline-block;
+  }
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+
+  .hero-arguments {
+    display: flex; gap: 3rem; justify-content: center;
+    margin-top: 5rem; padding-top: 3rem;
+    border-top: 1px solid rgba(200,187,168,0.4);
+    opacity: 0; animation: fadeUp 0.9s 1s forwards; flex-wrap: wrap;
+  }
+  .arg-item { text-align: center; flex: 1; min-width: 150px; }
+  .arg-icon { font-size: 1.6rem; margin-bottom: 0.8rem; display: block; }
+  .arg-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem; font-weight: 500; margin-bottom: 0.4rem; color: var(--deep);
+  }
+  .arg-text { font-size: 0.82rem; color: var(--terra); line-height: 1.5; font-weight: 300; }
+
+  .scroll-hint {
+    position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+    opacity: 0; animation: fadeUp 1s 1.4s forwards;
+  }
+  .scroll-hint span { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--stone); opacity: 0.6; }
+  .scroll-line {
+    width: 1px; height: 50px;
+    background: linear-gradient(to bottom, var(--stone), transparent);
+    animation: scrollPulse 2s infinite;
+  }
+
+  /* SECTIONS */
+  section { padding: 7rem 4rem; }
+  .section-label {
+    font-size: 0.7rem; letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 1rem; display: block;
+  }
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 300; line-height: 1.2; color: var(--deep); margin-bottom: 1.5rem;
+  }
+  .section-sub {
+    font-size: 0.95rem; font-weight: 300; color: var(--terra);
+    line-height: 1.7; max-width: 500px;
+  }
+
+  /* REVEAL */
+  .reveal {
+    opacity: 0; transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+
+  /* SERVICES */
+  #services {
+    background: var(--deep); color: var(--cream);
+    position: relative; overflow: hidden;
+  }
+  #services::before {
+    content: ''; position: absolute;
+    top: -100px; right: -100px;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(181,132,90,0.15) 0%, transparent 60%);
+    border-radius: 50%;
+  }
+  #services .section-label { color: var(--light-accent); }
+  #services .section-title { color: var(--cream); }
+  #services .section-sub { color: rgba(250,247,242,0.6); }
+
+  .services-layout {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;
+    margin-top: 4rem; max-width: 1100px; margin-left: auto; margin-right: auto;
+  }
+  .service-card {
+    padding: 2.5rem;
+    border: 1px solid rgba(200,187,168,0.15);
+    border-radius: 0.5rem; position: relative; overflow: hidden;
+    transition: border-color 0.4s, transform 0.3s;
+    background: rgba(255,255,255,0.03);
+  }
+  .service-card::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(181,132,90,0.08), transparent);
+    opacity: 0; transition: opacity 0.4s;
+  }
+  .service-card:hover { border-color: rgba(181,132,90,0.4); transform: translateY(-4px); }
+  .service-card:hover::before { opacity: 1; }
+  .service-badge {
+    display: inline-block; font-size: 0.65rem; letter-spacing: 0.2em;
+    text-transform: uppercase; background: rgba(181,132,90,0.15);
+    color: var(--light-accent); padding: 0.3rem 0.8rem;
+    border-radius: 2rem; margin-bottom: 1.5rem;
+  }
+  .service-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.7rem; font-weight: 300; color: var(--cream); margin-bottom: 1.5rem;
+  }
+  .service-list { list-style: none; display: flex; flex-direction: column; gap: 0.9rem; }
+  .service-list li {
+    font-size: 0.88rem; font-weight: 300;
+    color: rgba(250,247,242,0.75);
+    display: flex; align-items: flex-start; gap: 0.8rem; line-height: 1.5;
+  }
+  .service-list li::before { content: '—'; color: var(--accent); flex-shrink: 0; }
+
+  /* TARIFS */
+  #tarifs { background: var(--sand); }
+  .tarifs-layout {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem;
+    margin-top: 4rem; max-width: 900px;
+  }
+  .tarif-card {
+    background: var(--white); border-radius: 0.8rem;
+    padding: 3rem 2.5rem;
+    border: 1px solid rgba(200,187,168,0.4);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .tarif-card:hover { transform: translateY(-5px); box-shadow: 0 20px 60px rgba(44,36,32,0.1); }
+  .tarif-card.featured {
+    background: var(--deep); border-color: transparent;
+  }
+  .tarif-label {
+    font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--accent); background: rgba(181,132,90,0.1);
+    padding: 0.3rem 0.8rem; border-radius: 2rem;
+    display: inline-block; margin-bottom: 1.5rem;
+  }
+  .tarif-price {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3.5rem; font-weight: 300; line-height: 1; margin-bottom: 0.3rem;
+  }
+  .tarif-price sup { font-size: 1.5rem; }
+  .tarif-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem; font-weight: 400; margin-bottom: 0.8rem;
+  }
+  .tarif-desc {
+    font-size: 0.85rem; font-weight: 300; line-height: 1.6;
+    margin-bottom: 1.5rem; padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(200,187,168,0.3);
+  }
+  .tarif-list { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; margin-bottom: 1.5rem; }
+  .tarif-list li {
+    font-size: 0.84rem; font-weight: 300;
+    display: flex; align-items: flex-start; gap: 0.7rem; line-height: 1.4;
+  }
+  .tarif-list li::before { content: '✓'; color: var(--accent); flex-shrink: 0; font-weight: 500; }
+  .tarif-note { font-size: 0.75rem; font-style: italic; line-height: 1.5; }
+
+  /* Featured overrides */
+  .tarif-card.featured .tarif-price,
+  .tarif-card.featured .tarif-title { color: var(--cream); }
+  .tarif-card.featured .tarif-desc { color: rgba(250,247,242,0.65); }
+  .tarif-card.featured .tarif-list li { color: rgba(250,247,242,0.8); }
+  .tarif-card.featured .tarif-note { color: rgba(250,247,242,0.5); }
+  .tarif-card.featured .tarif-label { background: rgba(181,132,90,0.2); color: var(--light-accent); }
+
+  /* CONTACT */
+  #contact { background: var(--cream); }
+  .contact-layout {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 6rem;
+    margin-top: 4rem; max-width: 1000px;
+  }
+  .contact-about { display: flex; flex-direction: column; gap: 2rem; }
+  .portrait-placeholder {
+    width: 140px; height: 140px;
+    background: linear-gradient(135deg, var(--stone), var(--terra));
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 3rem; color: var(--cream); opacity: 0.75;
+  }
+  .about-text {
+    font-size: 0.95rem; font-weight: 300; color: var(--terra);
+    line-height: 1.8; font-style: italic;
+    border-left: 2px solid var(--stone); padding-left: 1.5rem;
+  }
+  .contact-info { display: flex; flex-direction: column; gap: 1rem; }
+  .info-label {
+    font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--stone); display: block; margin-bottom: 0.2rem;
+  }
+  .contact-info a {
+    font-size: 1.1rem; color: var(--deep); text-decoration: none;
+    font-weight: 400; transition: color 0.3s;
+  }
+  .contact-info a:hover { color: var(--accent); }
+
+  /* FORM */
+  .contact-form { display: flex; flex-direction: column; gap: 1.2rem; }
+  .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+  .form-group label {
+    font-size: 0.72rem; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--terra); font-weight: 400;
+  }
+  .form-group input,
+  .form-group textarea {
+    background: var(--sand);
+    border: 1px solid rgba(200,187,168,0.5);
+    border-radius: 0.3rem; padding: 0.9rem 1.1rem;
+    font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+    font-weight: 300; color: var(--deep); outline: none; resize: none;
+    transition: border-color 0.3s, background 0.3s;
+  }
+  .form-group input:focus,
+  .form-group textarea:focus { border-color: var(--accent); background: var(--white); }
+  .form-group input::placeholder,
+  .form-group textarea::placeholder { color: var(--stone); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .btn-submit {
+    background: var(--accent); color: var(--white); border: none;
+    padding: 1.1rem 2.5rem; font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem; letter-spacing: 0.12em; text-transform: uppercase;
+    border-radius: 0.3rem; cursor: pointer;
+    transition: background 0.3s, transform 0.2s; align-self: flex-start;
+  }
+  .btn-submit:hover { background: var(--deep); transform: translateY(-2px); }
+  .form-success {
+    display: none; background: rgba(181,132,90,0.1);
+    border: 1px solid var(--accent); border-radius: 0.3rem;
+    padding: 1rem 1.5rem; font-size: 0.88rem;
+    color: var(--accent); font-style: italic;
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--deep); color: var(--cream);
+    padding: 3rem 4rem;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 1rem;
+  }
+  .footer-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem; font-weight: 300;
+    letter-spacing: 0.15em; text-transform: uppercase;
+  }
+  .footer-logo span { color: var(--light-accent); }
+  .footer-copy { font-size: 0.78rem; color: rgba(250,247,242,0.4); font-weight: 300; }
+  .footer-zone { font-size: 0.78rem; color: var(--stone); font-weight: 300; font-style: italic; }
+
+  /* FLOATING PHONE */
+  .floating-phone {
+    position: fixed; bottom: 2rem; right: 2rem;
+    background: var(--accent); color: var(--white);
+    width: 56px; height: 56px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem; text-decoration: none;
+    box-shadow: 0 8px 30px rgba(181,132,90,0.4);
+    transition: transform 0.3s, box-shadow 0.3s; z-index: 50;
+    animation: float 3s ease-in-out infinite;
+  }
+  .floating-phone:hover { transform: scale(1.1) !important; box-shadow: 0 12px 40px rgba(181,132,90,0.5); animation: none; }
+
+  /* KEYFRAMES */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+
+  /* MOBILE */
+  @media (max-width: 768px) {
+    nav { padding: 1.5rem 1.5rem; }
+    nav.scrolled { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    section { padding: 5rem 1.5rem; }
+    #accueil { padding: 7rem 1.5rem 3rem; }
+    .hero-arguments { gap: 2rem; }
+    .services-layout { grid-template-columns: 1fr; }
+    .tarifs-layout { grid-template-columns: 1fr; }
+    .contact-layout { grid-template-columns: 1fr; gap: 3rem; }
+    .form-row { grid-template-columns: 1fr; }
+    footer { flex-direction: column; text-align: center; padding: 2rem 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#accueil" class="nav-logo">Stay<span>cation</span></a>
+  <ul class="nav-links">
+    <li><a href="#accueil">Accueil</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#tarifs">Tarifs</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="accueil">
+  <div class="hero-bg"></div>
+  <div class="hero-lines">
+    <svg viewBox="0 0 1200 700" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="900" cy="200" r="300" stroke="#8B6F5E" stroke-width="0.5"/>
+      <circle cx="900" cy="200" r="200" stroke="#8B6F5E" stroke-width="0.5"/>
+      <circle cx="200" cy="500" r="200" stroke="#8B6F5E" stroke-width="0.5"/>
+      <line x1="0" y1="350" x2="1200" y2="350" stroke="#8B6F5E" stroke-width="0.5"/>
+    </svg>
+  </div>
+
+  <div class="hero-content">
+    <div class="hero-tag">✦ Conciergerie Airbnb · Nîmes & Gard</div>
+    <h1 class="hero-h1">
+      Libérez-vous des<br>
+      <em>contraintes</em> de votre<br>
+      location saisonnière.
+    </h1>
+    <p class="hero-sub">
+      Confiez-moi la gestion de votre bien de A à Z.
+      Maximisez vos revenus — je m'occupe du reste.
+    </p>
+    <div class="hero-cta-group">
+      <a href="#contact" class="btn-primary">Estimer mes revenus</a>
+      <a href="#services" class="btn-secondary">Découvrir mes services</a>
+    </div>
+
+    <div class="hero-arguments">
+      <div class="arg-item">
+        <span class="arg-icon">⏳</span>
+        <div class="arg-title">Gain de temps</div>
+        <p class="arg-text">Fini les allers-retours pour les remises de clés.</p>
+      </div>
+      <div class="arg-item">
+        <span class="arg-icon">📈</span>
+        <div class="arg-title">Revenus optimisés</div>
+        <p class="arg-text">Tarifs ajustés selon la saisonnalité et les événements locaux.</p>
+      </div>
+      <div class="arg-item">
+        <span class="arg-icon">🌿</span>
+        <div class="arg-title">Tranquillité d'esprit</div>
+        <p class="arg-text">Des voyageurs chouchoutés, un logement impeccable.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <span>Découvrir</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <div style="max-width:1100px;margin:0 auto;">
+    <span class="section-label reveal">✦ Ce que je fais</span>
+    <h2 class="section-title reveal reveal-delay-1">
+      Des services pensés<br>pour chaque propriétaire.
+    </h2>
+    <p class="section-sub reveal reveal-delay-2">
+      Gestion complète ou à la carte — toujours avec le même niveau d'exigence.
+    </p>
+
+    <div class="services-layout">
+      <div class="service-card reveal reveal-delay-2">
+        <span class="service-badge">✦ Offre phare</span>
+        <h3 class="service-title">Gestion Complète</h3>
+        <ul class="service-list">
+          <li>Création et optimisation de votre annonce (photos attractives, description percutante)</li>
+          <li>Gestion des réservations et communication 7j/7 avec les voyageurs</li>
+          <li>Accueil chaleureux (check-in) et état des lieux (check-out)</li>
+          <li>Ménage professionnel et gestion du linge, qualité hôtelière</li>
+          <li>Consommables inclus : café, thé, papier toilette, savon</li>
+          <li>Assistance et dépannage pendant tout le séjour</li>
+          <li>Gestion des tarifs selon la saisonnalité (Nîmes, Pont du Gard, festivals…)</li>
+        </ul>
+      </div>
+
+      <div class="service-card reveal reveal-delay-3">
+        <span class="service-badge">Flexibilité</span>
+        <h3 class="service-title">Services à la Carte</h3>
+        <ul class="service-list">
+          <li>Ménage professionnel seul après chaque séjour</li>
+          <li>Gestion et renouvellement du linge de maison</li>
+          <li>Remises de clés et accueil des voyageurs uniquement</li>
+          <li>Contrôle de l'état du logement entre deux séjours</li>
+          <li>Remplacement des consommables à la demande</li>
+        </ul>
+        <div style="margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid rgba(200,187,168,0.12);">
+          <p style="font-size:0.82rem;color:rgba(250,247,242,0.5);font-weight:300;font-style:italic;">
+            Vous choisissez, je m'adapte.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TARIFS -->
+<section id="tarifs">
+  <div style="max-width:900px;">
+    <span class="section-label reveal">✦ Transparence totale</span>
+    <h2 class="section-title reveal reveal-delay-1">
+      Des tarifs clairs,<br>sans surprise.
+    </h2>
+    <p class="section-sub reveal reveal-delay-2">
+      Pas de frais cachés. Je me rémunère uniquement si votre logement est loué.
+    </p>
+
+    <div class="tarifs-layout">
+      <div class="tarif-card featured reveal reveal-delay-2">
+        <span class="tarif-label">Gestion complète</span>
+        <div class="tarif-price" style="color:var(--cream);"><sup>%</sup>20</div>
+        <h3 class="tarif-title">Commission sur revenus nets</h3>
+        <p class="tarif-desc">Je me rémunère uniquement quand votre bien est loué. Si vous ne gagnez rien, je ne gagne rien.</p>
+        <ul class="tarif-list">
+          <li>Aucun frais fixe mensuel</li>
+          <li>Frais de ménage payés par le voyageur sur Airbnb</li>
+          <li>Gestion 7j/7 incluse</li>
+          <li>Toutes les prestations incluses</li>
+        </ul>
+        <p class="tarif-note">✦ Les frais de ménage sont intégralement payés par le voyageur via Airbnb — ils ne sortent jamais de votre poche.</p>
+      </div>
+
+      <div class="tarif-card reveal reveal-delay-3">
+        <span class="tarif-label">À la carte</span>
+        <div class="tarif-price" style="font-size:2rem;padding-top:0.8rem;color:var(--deep);">Sur devis</div>
+        <h3 class="tarif-title" style="color:var(--deep);">Services individuels</h3>
+        <p class="tarif-desc" style="color:var(--terra);">Choisissez uniquement les prestations dont vous avez besoin.</p>
+        <ul class="tarif-list" style="">
+          <li style="color:var(--terra);">Ménage & linge seul</li>
+          <li style="color:var(--terra);">Remise de clés & accueil</li>
+          <li style="color:var(--terra);">Contrôle entre séjours</li>
+        </ul>
+        <p class="tarif-note" style="color:var(--stone);">Contactez-moi pour un devis personnalisé.</p>
+        <div style="margin-top:1.5rem;">
+          <a href="#contact" class="btn-secondary" style="font-size:0.78rem;padding:0.8rem 1.8rem;">Demander un devis</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="reveal reveal-delay-4" style="margin-top:2.5rem;padding:1.5rem 2rem;background:rgba(181,132,90,0.06);border-left:2px solid var(--accent);border-radius:0 0.3rem 0.3rem 0;">
+      <p style="font-size:0.88rem;color:var(--terra);font-weight:300;line-height:1.7;">
+        <strong style="font-weight:500;color:var(--deep);">Bon à savoir :</strong> Sur Airbnb, les frais de ménage sont configurés en frais supplémentaires payés par le voyageur. Votre revenu net n'est donc jamais impacté par les coûts de ménage.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div style="max-width:1000px;">
+    <span class="section-label reveal">✦ Parlons de votre bien</span>
+    <h2 class="section-title reveal reveal-delay-1">
+      Prêt à déléguer<br>sereinement ?
+    </h2>
+
+    <div class="contact-layout">
+      <div class="contact-about reveal reveal-delay-2">
+        <div class="portrait-placeholder">🌿</div>
+        <blockquote class="about-text">
+          "Passionnée par le contact humain et l'immobilier, j'ai créé Staycation pour accompagner les propriétaires de la région. Rigoureuse, réactive et sur place, je veille sur votre bien comme si c'était le mien."
+        </blockquote>
+
+        <div class="contact-info">
+          <div>
+            <span class="info-label">Téléphone</span>
+            <a href="tel:0766052944">📞 07 66 05 29 44</a>
+          </div>
+          <div>
+            <span class="info-label" style="margin-top:0.5rem;">Zone d'intervention</span>
+            <p style="font-size:0.9rem;color:var(--terra);font-weight:300;">Nîmes · Gard · Pont du Gard · Camargue</p>
+          </div>
+          <div style="margin-top:0.5rem;">
+            <a href="tel:0766052944" class="btn-primary" style="font-size:0.8rem;">Appeler maintenant</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="reveal reveal-delay-3">
+        <form class="contact-form" id="contactForm" onsubmit="handleSubmit(event)">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Prénom</label>
+              <input type="text" placeholder="Marie" required>
+            </div>
+            <div class="form-group">
+              <label>Nom</label>
+              <input type="text" placeholder="Dupont" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Téléphone</label>
+            <input type="tel" placeholder="06 00 00 00 00" required>
+          </div>
+          <div class="form-group">
+            <label>Lien annonce Airbnb <span style="opacity:0.5;text-transform:none;font-size:0.68rem;">(si existante)</span></label>
+            <input type="url" placeholder="https://airbnb.com/rooms/...">
+          </div>
+          <div class="form-group">
+            <label>Message</label>
+            <textarea rows="4" placeholder="Décrivez-moi votre bien et vos besoins…" required></textarea>
+          </div>
+          <button type="submit" class="btn-submit">Envoyer ma demande →</button>
+          <div class="form-success" id="formSuccess">
+            ✦ Message reçu ! Je vous recontacte très rapidement.
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Stay<span>cation</span></div>
+  <div class="footer-zone">Nîmes · Gard · Occitanie</div>
+  <div class="footer-copy">© 2025 Staycation · Conciergerie Airbnb</div>
+</footer>
+
+<!-- FLOATING CTA -->
+<a href="tel:0766052944" class="floating-phone" title="Appeler Staycation">📞</a>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.transform = `translate(${mx - 5}px, ${my - 5}px)`;
+  });
+
+  function animateRing() {
+    rx += (mx - rx) * 0.15;
+    ry += (my - ry) * 0.15;
+    ring.style.transform = `translate(${rx - 18}px, ${ry - 18}px)`;
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+
+  document.querySelectorAll('a, button, input, textarea, .service-card, .tarif-card').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      ring.style.width = '60px'; ring.style.height = '60px'; ring.style.opacity = '0.4';
+    });
+    el.addEventListener('mouseleave', () => {
+      ring.style.width = '36px'; ring.style.height = '36px'; ring.style.opacity = '0.6';
+    });
+  });
+
+  // Nav scroll
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 60);
+  });
+
+  // Reveal on scroll
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // Form
+  function handleSubmit(e) {
+    e.preventDefault();
+    const success = document.getElementById('formSuccess');
+    const btn = e.target.querySelector('button');
+    success.style.display = 'block';
+    btn.style.display = 'none';
+    setTimeout(() => {
+      success.style.display = 'none';
+      btn.style.display = 'inline-block';
+      e.target.reset();
+    }, 5000);
+  }
+</script>
+</body>
+</html>
