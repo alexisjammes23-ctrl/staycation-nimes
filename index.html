@@ -514,23 +514,19 @@
 
     // Paramètres envoyés au template EmailJS
     const templateParams = {
-      // ── Infos client
       client_prenom     : prenom,
       client_nom        : nom,
-      client_nom_complet: `${prenom} ${nom}`,
+      client_nom_complet: prenom + ' ' + nom,
       client_telephone  : telephone,
       client_email      : email,
-      // ── Demande
+      reply_to          : email,
       type_service      : typeService,
       type_bien         : typeBien,
       nb_pieces         : nbPieces,
       airbnb_url        : airbnbUrl,
       message_client    : message,
-      // ── Méta
       ticket_id         : ticket,
-      date_envoi        : `${dateStr} à ${timeStr}`,
-      // ── Destinataire (défini aussi dans le template)
-      to_email          : 'staycation.nimes@gmail.com',
+      date_envoi        : dateStr + ' à ' + timeStr,
     };
 
     // Loading state
@@ -539,12 +535,15 @@
     btn.querySelector('.btn-label').textContent = 'Envoi en cours…';
 
     try {
-      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
+      const result = await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
+      console.log('EmailJS OK:', result.status, result.text);
       success.style.display = 'block';
       btn.style.display     = 'none';
       this.reset();
     } catch (err) {
-      console.error('EmailJS error:', err);
+      console.error('EmailJS ERREUR:', JSON.stringify(err));
+      // Affiche l'erreur précise pour diagnostic
+      error.innerHTML = 'Erreur ' + (err.status||'') + ' : ' + (err.text||err.message||'inconnue') + '.<br>Appelez-nous : <strong>07 66 05 29 44</strong>';
       error.style.display = 'block';
       btn.disabled = false;
       btn.classList.remove('loading');
